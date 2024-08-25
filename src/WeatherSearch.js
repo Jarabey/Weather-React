@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import App from "./App.css"
+import "./App.css";
 
 const WeatherSearch = () => {
   const [city, setCity] = useState("");
