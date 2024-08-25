@@ -62,7 +62,7 @@ const WeatherSearch = () => {
       {/* Credits Section */}
       <div>
       <p className="credits">
-          Coded by Jasmin Santos and is Open Source on{" "}
+          Coded by Jasmin Santos. Open Source on{" "}
           <a className="credits" href="https://github.com/Jarabey/Weather-React" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>.
