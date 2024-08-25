@@ -58,8 +58,6 @@ const WeatherSearch = () => {
         )}
         {error && <p className="error-message">{error}</p>}
       </div>
-
-      {/* Credits Section */}
       <div>
       <p className="credits">
           Coded by Jasmin Santos. Open Source on{" "}
