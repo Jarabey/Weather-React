@@ -55,7 +55,7 @@ const WeatherSearch = () => {
         />
         <button onClick={handleSearch}>Search</button>
         <button onClick={toggleUnits}>
-           {units === "metric" ? "Fahrenheit" : "Celsius"}
+           {units === "metric" ? "Farenheit" : "Celsius"}
         </button>
         {loading && <p>Loading...</p>}
         {weatherData && (
