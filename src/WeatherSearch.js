@@ -7,10 +7,10 @@ const WeatherSearch = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [units, setUnits] = useState("metric"); // Default to Celsius (metric)
+  const [isFahrenheit, setIsFahrenheit] = useState(false); // Toggle between Celsius and Fahrenheit
 
   const API_KEY = "217474443533be7fa7d7e3e24fcca45f";
-  const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=${units}`;
+  const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
 
   const handleSearch = async () => {
     if (city === "") return;
@@ -39,7 +39,12 @@ const WeatherSearch = () => {
   };
 
   const toggleUnits = () => {
-    setUnits(units === "metric" ? "imperial" : "metric");
+    setIsFahrenheit(!isFahrenheit);
+  };
+
+  // Convert Celsius to Fahrenheit
+  const convertToFahrenheit = (celsius) => {
+    return (celsius * 9) / 5 + 32;
   };
 
   return (
@@ -55,21 +60,24 @@ const WeatherSearch = () => {
         />
         <button onClick={handleSearch}>Search</button>
         <button onClick={toggleUnits}>
-           {units === "metric" ? "Fahrenheit" : "Celsius"}
+           {isFahrenheit ? "Celsius" : "Fahrenheit"}
         </button>
         {loading && <p>Loading...</p>}
         {weatherData && (
           <div className="weather">
             <h2>{weatherData.name}</h2>
             <p>
-              Temperature: {weatherData.main.temp}°{" "}
-              {units === "metric" ? "C" : "F"}
+              Temperature:{" "}
+              {isFahrenheit
+                ? convertToFahrenheit(weatherData.main.temp).toFixed(2)
+                : weatherData.main.temp.toFixed(2)}
+              ° {isFahrenheit ? "F" : "C"}
             </p>
             <p>Humidity: {weatherData.main.humidity}%</p>
             <p>Description: {weatherData.weather[0].description}</p>
             <p>
               Wind Speed: {weatherData.wind.speed}{" "}
-              {units === "metric" ? "m/s" : "mph"}
+              {isFahrenheit ? "miles/h" : "m/s"}
             </p>
             <img
               src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`}
