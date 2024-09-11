@@ -5,12 +5,14 @@ import "./App.css";
 const WeatherSearch = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
+  const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isFahrenheit, setIsFahrenheit] = useState(false); // Toggle between Celsius and Fahrenheit
+  const [isFahrenheit, setIsFahrenheit] = useState(false);
 
-  const API_KEY = "217474443533be7fa7d7e3e24fcca45f";
+  const API_KEY = "4b3503b2f08a729413c4d33ef1186004";
   const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+  const FORECAST_URL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`;
 
   const handleSearch = async () => {
     if (city === "") return;
@@ -18,6 +20,11 @@ const WeatherSearch = () => {
     try {
       const response = await axios.get(API_URL);
       setWeatherData(response.data);
+      setError("");
+      
+      // Fetch 5-day forecast
+      const forecastResponse = await axios.get(FORECAST_URL);
+      setForecastData(forecastResponse.data);
       setError("");
     } catch (err) {
       console.error(err.response ? err.response.data : err.message);
@@ -27,6 +34,7 @@ const WeatherSearch = () => {
           : "City not found or invalid API key."
       );
       setWeatherData(null);
+      setForecastData(null);
     } finally {
       setLoading(false);
     }
@@ -55,16 +63,16 @@ const WeatherSearch = () => {
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          onKeyPress={handleKeyPress} // Listen for Enter key press
+          onKeyPress={handleKeyPress}
           placeholder="Enter city"
         />
         <button onClick={handleSearch}>Search</button>
         <button onClick={toggleUnits}>
-           {isFahrenheit ? "Celsius" : "Fahrenheit"}
+          {isFahrenheit ? "Celsius" : "Fahrenheit"}
         </button>
         {loading && <p>Loading...</p>}
         {weatherData && (
-          <div className="weather">
+          <div className="current-weather">
             <h2>{weatherData.name}</h2>
             <p>
               Temperature:{" "}
@@ -85,7 +93,28 @@ const WeatherSearch = () => {
             />
           </div>
         )}
-        {error && <p className="error-message">{error}</p>}
+        {forecastData && (
+          <div className="forecast-container">
+            {forecastData.list.slice(0, 5).map((day, index) => (
+              <div key={index} className="forecast-day">
+                <h3>{new Date(day.dt * 1000).toLocaleDateString()}</h3>
+                <p>
+                  Temperature:{" "}
+                  {isFahrenheit
+                    ? convertToFahrenheit(day.main.temp).toFixed(2)
+                    : day.main.temp.toFixed(2)}
+                  ° {isFahrenheit ? "F" : "C"}
+                </p>
+                <p>Description: {day.weather[0].description}</p>
+                <img
+                  src={`http://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+                  alt={day.weather[0].description}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {error && <p className="error">{error}</p>}
       </div>
       <div>
         <p className="credits">
