@@ -58,7 +58,7 @@ const WeatherSearch = () => {
   return (
     <div>
       <div className="weather-container">
-        <h1>Weather Search</h1>
+        <h1>Weather</h1>
         <input
           type="text"
           value={city}
@@ -73,7 +73,7 @@ const WeatherSearch = () => {
         {loading && <p>Loading...</p>}
         {weatherData && (
           <div className="current-weather">
-            <h2>{weatherData.name}</h2>
+            <h2 className="city-name">{weatherData.name}</h2>
             <p>
               Temperature:{" "}
               {isFahrenheit
@@ -82,7 +82,7 @@ const WeatherSearch = () => {
               ° {isFahrenheit ? "F" : "C"}
             </p>
             <p>Humidity: {weatherData.main.humidity}%</p>
-            <p>Description: {weatherData.weather[0].description}</p>
+            <p>{weatherData.weather[0].description}</p>
             <p>
               Wind Speed: {weatherData.wind.speed}{" "}
               {isFahrenheit ? "miles/h" : "m/s"}
@@ -93,29 +93,38 @@ const WeatherSearch = () => {
             />
           </div>
         )}
-        {forecastData && (
-          <div className="forecast-container">
-            {forecastData.list.slice(0, 5).map((day, index) => (
-              <div key={index} className="forecast-day">
-                <h3>{new Date(day.dt * 1000).toLocaleDateString()}</h3>
-                <p>
-                  Temperature:{" "}
-                  {isFahrenheit
-                    ? convertToFahrenheit(day.main.temp).toFixed(2)
-                    : day.main.temp.toFixed(2)}
-                  ° {isFahrenheit ? "F" : "C"}
-                </p>
-                <p>Description: {day.weather[0].description}</p>
-                <img
-                  src={`http://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
-                  alt={day.weather[0].description}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-        {error && <p className="error">{error}</p>}
-      </div>
+ {forecastData && (
+  <div className="forecast-container">
+    {forecastData.list
+      .filter((day, index, array) => {
+        const currentDate = new Date(day.dt * 1000).getDate();
+        const previousDate = index > 0 ? new Date(array[index - 1].dt * 1000).getDate() : null;
+        return currentDate !== previousDate; 
+      })
+      .slice(0, 5)
+      .map((day, index) => (
+        <div key={index} className="forecast-day">
+          <h3>
+            {new Date(day.dt * 1000).toLocaleDateString("en-US", { weekday: 'short' })}
+          </h3>
+          <p className="temperature-forecast">
+            {isFahrenheit
+              ? convertToFahrenheit(day.main.temp).toFixed(2)
+              : day.main.temp.toFixed(2)}
+            ° {isFahrenheit ? "F" : "C"}
+          </p>
+          <p>{day.weather[0].description}</p>
+          <img
+            src={`http://openweathermap.org/img/wn/${day.weather[0].icon}.png`}
+            alt={day.weather[0].description}
+          />
+        </div>
+      ))}
+  </div>
+)}
+{error && <p className="error">{error}</p>}
+
+</div>
       <div>
         <p className="credits">
           Coded by{" "}
